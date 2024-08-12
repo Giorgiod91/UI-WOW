@@ -7,6 +7,8 @@ function FetchUi() {
   const [error, setError] = useState<string | null>(null);
   const [api_data, set_api_data] = useState("");
 
+  const profile1 = "";
+
   const handleFetch = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
@@ -14,7 +16,7 @@ function FetchUi() {
     setError(null);
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/server4", {
+      const response = await fetch("http://127.0.0.1:5000/server2", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -23,14 +25,27 @@ function FetchUi() {
       const data = await response.json();
       if (data) {
         set_api_data(data);
-        console.log(api_data);
-        console.log(data);
       }
     } catch (err) {
       setError("Failed to fetch data from api");
     } finally {
       setLoading(false);
     }
+  };
+  const handleCopy = () => {
+    let dataToCopy = JSON.stringify(api_data, null, 2);
+
+    dataToCopy = dataToCopy.replace(/\"/g, "");
+
+    // Clipboard API
+    navigator.clipboard.writeText(dataToCopy).then(
+      () => {
+        console.log("Copying to clipboard was successful!");
+      },
+      (err) => {
+        console.error("Could not copy text: ", err);
+      },
+    );
   };
 
   return (
@@ -39,9 +54,11 @@ function FetchUi() {
 
       <div>
         {api_data ? (
-          <div>
+          <div className="max-w-2xl overflow-x-auto">
             <h1>here copy the code and import</h1>
-            <div>{JSON.stringify(api_data)}</div>
+
+            <pre className="">{JSON.stringify(api_data, null, 2)}</pre>
+            <button onClick={handleCopy}>Copy to Clipboard</button>
           </div>
         ) : (
           <div>
